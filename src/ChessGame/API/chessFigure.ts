@@ -1,10 +1,13 @@
-import {numRep} from "../utils";
+import {matchSquare, numRep, strRep} from "../utils";
 import chessSquare from "./chessSquare";
 import chessGame from "./chessGame";
-import king from "./king";
+import king from "./Figures/king";
+import {Simulate} from "react-dom/test-utils";
+import chessBoard from "../ChessBoard";
 
 
 class chessFigure{
+    iconUrl : string | undefined
     isWhite : boolean
     square : chessSquare
     range : Array<chessSquare> | undefined
@@ -20,25 +23,7 @@ class chessFigure{
         this.square=figureSquare
         this.square.figure=this
 
-        for(let element of board.getSquares){
-            if(!element.getFigure){
-                continue
-            }
-            element.getFigure.updateRange(board)
-            if(element.getFigure.getRange?.find((sqr : chessSquare) => sqr.getFigure instanceof king)){
-                numberOfChecks++
-            }
-            if(numberOfChecks > 1){
-                board.setIsPositionLegal(false)
-                board.setCheck(true)
-            }else if(numberOfChecks === 1){
-                board.setIsPositionLegal(board.getIsWhitesTurn !== element.getFigure.getIsWhite)
-                board.setCheck(true)
-            }else{
-                board.setIsPositionLegal(true)
-                board.setCheck(false)
-            }
-        }
+        board.updateAndValidate()
     }
     static getCrossPathArray(figure : chessFigure, board : chessGame) : Array<chessSquare> | undefined{
         let uprightRange : Array<chessSquare> | undefined
@@ -117,7 +102,33 @@ class chessFigure{
     get getSquare() : chessSquare{
         return this.square
     }
+    get getIconUrl(): string | undefined{
+        return this.iconUrl
+    }
     move(board : chessGame, col : string | number, row : number){
+        if(!this.range?.find(element => matchSquare(element, col, row))){
+            throw new Error('Move '+strRep(col)+row+ ' is illegal')
+        }
+        let prevSquare=this.square
+        prevSquare.figure=undefined
+        let postMoveBoard : chessGame = structuredClone(board)
+        prevSquare.figure=this
+
+        let newSquare : chessSquare | undefined=postMoveBoard.getSquare(col, row)
+        if(!newSquare){ //Well, It won't happen 100%
+            throw new Error('Move '+strRep(col)+row+ ' is illegal')
+        }
+        newSquare.setFigure=this //We know that this square isn't going to be undefined
+        this.square=newSquare
+        postMoveBoard.setTurn=!postMoveBoard.getIsWhitesTurn
+        postMoveBoard.setMoveCounter=postMoveBoard.getMoveCounter+1
+        postMoveBoard.updateAndValidate()
+        if(!postMoveBoard.isPositionLegal){
+            this.square=prevSquare
+            return board
+        }else{
+            return postMoveBoard
+        }
     }
 }
 

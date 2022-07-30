@@ -1,8 +1,12 @@
-import chessFigure from "./chessFigure";
-import chessGame from "./chessGame";
-import chessSquare from "./chessSquare";
+import chessFigure from "../chessFigure";
+import chessGame from "../chessGame";
+import chessSquare from "../chessSquare";
 
 class pawn extends chessFigure{
+    constructor(isWhite : boolean, board : chessGame, col : string | number, row : number) {
+        super(isWhite, board, col, row);
+        this.iconUrl= isWhite ? "https://upload.wikimedia.org/wikipedia/commons/4/45/Chess_plt45.svg" : "https://upload.wikimedia.org/wikipedia/commons/c/c7/Chess_pdt45.svg"
+    }
     updateRange(board: chessGame){
         let baseRange : Array<chessSquare> | undefined
         let nonEmpty : chessSquare | undefined

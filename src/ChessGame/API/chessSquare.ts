@@ -8,9 +8,13 @@ class chessSquare{
     row : number
     figure : chessFigure | undefined
     isWhite : boolean
+    isHighlighted : boolean
+    isSelected : boolean
 
     constructor(col: string | number, row : number, isWhite: boolean) {
         this.setSquare(col, row, isWhite)
+        this.isHighlighted=false
+        this.isSelected=false
     }
 
     get getRow() : number{
@@ -36,6 +40,9 @@ class chessSquare{
         if(col < 1 || col > 8) throw new Error('Incorrect column index')
         this.col={asLetter:strRep(col), asIndex:col}
         this.isWhite=isWhite
+    }
+    set setFigure(figure : chessFigure){
+        this.figure=figure
     }
 }
 

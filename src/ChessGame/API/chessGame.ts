@@ -1,11 +1,14 @@
 import {matchSquare} from "../utils";
 import chessSquare from "./chessSquare";
-import king from "./king";
-import queen from "./queen";
-import pawn from "./pawn";
-import knight from "./knight";
-import bishop from "./bishop";
-import rook from "./rook";
+import king from "./Figures/king";
+import queen from "./Figures/queen";
+import pawn from "./Figures/pawn";
+import knight from "./Figures/knight";
+import bishop from "./Figures/bishop";
+import rook from "./Figures/rook";
+import chessGameHistory from "./chessGameHistory";
+import chessFigure from "./chessFigure";
+import chessSquareComponent from "../ChessSquareComponent";
 
 class chessGame{
     squares : Array<chessSquare>
@@ -15,11 +18,13 @@ class chessGame{
     whiteCanCastle : boolean //Not clearly that they can castle. This flag is an information about whether, or not either rook or king have moved this game (other requirements will be checked right before castling)
     blackCanCastle : boolean //same as with whiteCanCastle
     moveCounter : number
+    selectedSquare : chessSquare | undefined
+    history : chessGameHistory | undefined
     constructor() {
         this.squares=new Array(8*8)
         for(let i=0;i<8;i++){
             for(let j=0;j<8;j++){
-                this.squares[i*8+j]=new chessSquare(j+1, i+1, (i+j) % 2 === 0)
+                this.squares[j*8+i]=new chessSquare(j+1, i+1, (i+j) % 2 === 0)
             }
         }
         this.isWhitesTurn=true
@@ -28,6 +33,8 @@ class chessGame{
         this.whiteCanCastle=true
         this.blackCanCastle=true
         this.moveCounter=0
+        this.selectedSquare=undefined
+        this.history=new chessGameHistory()
     }
     get getSquares() : Array<chessSquare>{
         return this.squares
@@ -74,15 +81,41 @@ class chessGame{
         this.whiteCanCastle=true
         this.blackCanCastle=true
         this.moveCounter=0
+        this.history?.handleGameChange(this)
     }
-    setCheck(val: boolean): void{
+    updateAndValidate(){
+        let numberOfChecks : number=0
+        for(let element of this.getSquares){
+            if(!element.getFigure){
+                continue
+            }
+            element.getFigure.updateRange(this)
+            if(element.getFigure.getRange?.find((sqr : chessSquare) => sqr.getFigure instanceof king)){
+                numberOfChecks++
+            }
+            if(numberOfChecks > 1){
+                this.setIsPositionLegal=false
+                this.setCheck=true
+            }else if(numberOfChecks === 1){
+                this.setIsPositionLegal=this.getIsWhitesTurn !== element.getFigure.getIsWhite
+                this.setCheck=true
+            }else{
+                this.setIsPositionLegal=true
+                this.setCheck=false
+            }
+        }
+    }
+    set setCheck(val: boolean){
         this.check=val
     }
-    setIsPositionLegal(val: boolean): void{
+    set setIsPositionLegal(val: boolean){
         this.isPositionLegal=val
     }
-    setTurn(isWhitesTurn: boolean): void{
+    set setTurn(isWhitesTurn: boolean){
         this.isWhitesTurn=isWhitesTurn
+    }
+    set setMoveCounter(MoveCounter : number){
+        this.moveCounter=MoveCounter
     }
     get getCheck(): boolean{
         return this.check
@@ -92,6 +125,9 @@ class chessGame{
     }
     get getIsWhitesTurn(): boolean{
         return this.isWhitesTurn
+    }
+    get getMoveCounter() : number{
+        return this.moveCounter
     }
 }
 
