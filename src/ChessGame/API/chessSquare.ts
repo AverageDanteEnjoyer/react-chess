@@ -32,6 +32,9 @@ class chessSquare{
     get getIsWhite() : boolean{
         return this.isWhite
     }
+    get getIsSelected() : boolean{
+        return this.isSelected
+    }
 
     setSquare(col : string | number, row : number, isWhite: boolean) : void{
         col=numRep(col)
@@ -41,8 +44,14 @@ class chessSquare{
         this.col={asLetter:strRep(col), asIndex:col}
         this.isWhite=isWhite
     }
-    set setFigure(figure : chessFigure){
+    set setFigure(figure : chessFigure | undefined){
         this.figure=figure
+    }
+    set setIsSelected(isSelected : boolean){
+        this.isSelected=isSelected
+    }
+    set setIsHighlighted(isHighlighted : boolean){
+        this.isHighlighted=isHighlighted
     }
 }
 

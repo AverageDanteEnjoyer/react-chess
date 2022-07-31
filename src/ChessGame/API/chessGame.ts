@@ -36,13 +36,6 @@ class chessGame{
         this.selectedSquare=undefined
         this.history=new chessGameHistory()
     }
-    get getSquares() : Array<chessSquare>{
-        return this.squares
-    }
-    getSquare(col: number | string, row: number) : chessSquare | undefined{
-        return this.squares.find(element => matchSquare(element, col, row))
-    }
-
     Initiate(): void{
         for(let square of this.squares){
             square.figure=undefined
@@ -117,6 +110,16 @@ class chessGame{
     set setMoveCounter(MoveCounter : number){
         this.moveCounter=MoveCounter
     }
+    set setSelectedSquare(selectedSquare : chessSquare | undefined){
+        this.selectedSquare=selectedSquare
+    }
+
+    get getSquares() : Array<chessSquare>{
+        return this.squares
+    }
+    getSquare(col: number | string, row: number) : chessSquare | undefined{
+        return this.squares.find(element => matchSquare(element, col, row))
+    }
     get getCheck(): boolean{
         return this.check
     }
@@ -128,6 +131,9 @@ class chessGame{
     }
     get getMoveCounter() : number{
         return this.moveCounter
+    }
+    get getSelectedSquare() : chessSquare | undefined{
+        return this.selectedSquare
     }
 }
 

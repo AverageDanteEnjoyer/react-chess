@@ -5,13 +5,13 @@ import chessGame from "./API/chessGame";
 import {Container, Row, Col} from 'react-grid-system'
 
 interface ChessFrameProps extends React.ComponentProps<any>{
-
+    board : chessGame
 }
 
 function ChessFrame(props : ChessFrameProps){
     return (
         <Container className={frameStyles.frame}>
-            <ChessBoard state={new chessGame()}/>
+            <ChessBoard state={props.board}/>
         </Container>
     )
 }

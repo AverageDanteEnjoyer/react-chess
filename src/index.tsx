@@ -12,12 +12,15 @@ import ChessBoard from "./ChessGame/ChessBoard";
 import chessFrame from "./ChessGame/ChessFrame";
 import ChessFrame from "./ChessGame/ChessFrame";
 
+const board=new chessGame()
+board.Initiate()
+
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
 root.render(
   <React.StrictMode>
-    <ChessFrame/>
+    <ChessFrame board={board}/>
   </React.StrictMode>
 );
 

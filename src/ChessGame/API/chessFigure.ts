@@ -2,7 +2,6 @@ import {matchSquare, numRep, strRep} from "../utils";
 import chessSquare from "./chessSquare";
 import chessGame from "./chessGame";
 import king from "./Figures/king";
-import {Simulate} from "react-dom/test-utils";
 import chessBoard from "../ChessBoard";
 
 
@@ -105,29 +104,36 @@ class chessFigure{
     get getIconUrl(): string | undefined{
         return this.iconUrl
     }
-    move(board : chessGame, col : string | number, row : number){
+    move(board : chessGame, col : string | number, row : number) : chessGame | undefined{
         if(!this.range?.find(element => matchSquare(element, col, row))){
-            throw new Error('Move '+strRep(col)+row+ ' is illegal')
+            return undefined
         }
-        let prevSquare=this.square
-        prevSquare.figure=undefined
-        let postMoveBoard : chessGame = structuredClone(board)
-        prevSquare.figure=this
 
-        let newSquare : chessSquare | undefined=postMoveBoard.getSquare(col, row)
-        if(!newSquare){ //Well, It won't happen 100%
-            throw new Error('Move '+strRep(col)+row+ ' is illegal')
+        let newSquare : chessSquare | undefined=board.getSquare(col, row)
+        if(!newSquare){
+            return undefined
         }
-        newSquare.setFigure=this //We know that this square isn't going to be undefined
+        let newSquarePrevFigure=newSquare.getFigure
+        let prevSquare=this.square
+        prevSquare.setFigure=undefined
+
+        newSquare.setFigure=this
         this.square=newSquare
-        postMoveBoard.setTurn=!postMoveBoard.getIsWhitesTurn
-        postMoveBoard.setMoveCounter=postMoveBoard.getMoveCounter+1
-        postMoveBoard.updateAndValidate()
-        if(!postMoveBoard.isPositionLegal){
+
+        board.setTurn=!board.getIsWhitesTurn
+        board.updateAndValidate()
+
+        if(!board.isPositionLegal){
+            newSquare.setFigure=newSquarePrevFigure
+            prevSquare.setFigure=this
             this.square=prevSquare
-            return board
+
+            board.setTurn=!board.getIsWhitesTurn
+            board.updateAndValidate()
+            return undefined
         }else{
-            return postMoveBoard
+            board.setMoveCounter=board.getMoveCounter+1
+            return board
         }
     }
 }
