@@ -77,24 +77,19 @@ class chessGame{
         this.history?.handleGameChange(this)
     }
     updateAndValidate(){
-        let numberOfChecks : number=0
+        this.setCheck=false
+        this.setIsPositionLegal=true
+
         for(let element of this.getSquares){
             if(!element.getFigure){
                 continue
             }
             element.getFigure.updateRange(this)
             if(element.getFigure.getRange?.find((sqr : chessSquare) => sqr.getFigure instanceof king)){
-                numberOfChecks++
-            }
-            if(numberOfChecks > 1){
-                this.setIsPositionLegal=false
                 this.setCheck=true
-            }else if(numberOfChecks === 1){
-                this.setIsPositionLegal=this.getIsWhitesTurn !== element.getFigure.getIsWhite
-                this.setCheck=true
-            }else{
-                this.setIsPositionLegal=true
-                this.setCheck=false
+                if(this.getIsWhitesTurn === element.getFigure.getIsWhite){
+                    this.setIsPositionLegal=false
+                }
             }
         }
     }

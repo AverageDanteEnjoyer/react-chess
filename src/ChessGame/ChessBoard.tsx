@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useState} from "react";
 import chessGame from "./API/chessGame";
 import chessGameHistory from "./API/chessGameHistory";
 import ChessSquareComponent from "./ChessSquareComponent";
@@ -12,6 +12,12 @@ interface ChessBoardProps extends React.ComponentProps<any>{
 }
 
 function handleSelection(board: chessGame, square : chessSquare){
+    board.getSquares.filter(element => element!==square).forEach(sq =>{ //all squares on the board but 'square'
+        sq.setIsSelected=false
+        sq.setIsHighlighted=false
+    })
+    square.setIsHighlighted=false
+
     if(board.getSelectedSquare){
         if(board.getSelectedSquare.getFigure?.move(board, square.getCol.asLetter, square.getRow)){
             board.selectedSquare=undefined
@@ -19,14 +25,8 @@ function handleSelection(board: chessGame, square : chessSquare){
             return board
         }
     }
+
     board.setSelectedSquare=(square.getIsSelected ? square : undefined)
-
-    board.getSquares.filter(element => element!==square).forEach(sq =>{ //all squares on the board but 'square'
-        sq.setIsSelected=false
-        sq.setIsHighlighted=false
-    })
-    square.setIsHighlighted=false
-
     if(board.getSelectedSquare?.getFigure?.getRange){
         board.getSelectedSquare.getFigure.getRange.forEach(element => {
             element.setIsHighlighted=true
@@ -47,7 +47,7 @@ function ChessBoard(props : ChessBoardProps){
             let squareAPI=game.getSquares[j*8+i]
             row.push(
                 <ChessSquareComponent state={squareAPI} onClick={() => {
-                    if(game.isWhitesTurn===squareAPI.getFigure?.isWhite){
+                    if(game.getIsWhitesTurn===squareAPI.getFigure?.getIsWhite){
                         squareAPI.setIsSelected=!squareAPI.getIsSelected
                     }
                     setGame((game:chessGame) => handleSelection(game, squareAPI));
